@@ -2,9 +2,9 @@
 <project version="4">
   <component name="VcsDirectoryMappings">
     <mapping directory="" vcs="" />
+    <mapping directory="C:/GitHub/OnlineShop" vcs="CVS" />
+    <mapping directory="C:/GitHub/cpsc362" vcs="CVS" />
     <mapping directory="$PROJECT_DIR$" vcs="Git" />
-    <mapping directory="$PROJECT_DIR$/../../../../../GitHub/OnlineShop" vcs="CVS" />
-    <mapping directory="$PROJECT_DIR$/../../../../../GitHub/cpsc362" vcs="CVS" />
   </component>
 </project>
 
