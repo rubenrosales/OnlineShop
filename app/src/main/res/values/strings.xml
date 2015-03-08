@@ -5,5 +5,7 @@
     <string name="hello_world">Hello world!</string>
     <string name="action_settings">Settings</string>
     <string name="villian">E.V.I.L.</string>
+    <string name="to_cart">GO TO CART</string>
+    <string name="get_data">Get Data</string>
 
 </resources>
