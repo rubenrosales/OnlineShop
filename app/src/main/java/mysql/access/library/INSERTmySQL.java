@@ -1,0 +1,42 @@
+package mysql.access.library;
+
+import android.util.Log;
+
+import org.apache.http.HttpResponse;
+import org.apache.http.client.ClientProtocolException;
+import org.apache.http.client.HttpClient;
+import org.apache.http.client.methods.HttpPost;
+import org.apache.http.impl.client.DefaultHttpClient;
+
+import java.io.IOException;
+import java.io.UnsupportedEncodingException;
+
+/**
+ * Created by Andrey on 3/12/2015.
+ * Insert data into mySQL DB via php script
+ *
+ * */
+
+ public class INSERTmySQL {
+
+    public INSERTmySQL(){
+
+    }
+
+    public void insertMailAndPass(String email, String password) {
+        String url_set = "http://csufshop.ozolin.ru/insert.php?email=" + email + "&password="+ password;
+        try {
+            HttpClient httpClient = new DefaultHttpClient();
+            HttpPost httpPost = new HttpPost(url_set);
+            HttpResponse response = httpClient.execute(httpPost);
+        } catch (UnsupportedEncodingException e) {
+            e.printStackTrace();
+        } catch (ClientProtocolException e) {
+            Log.e("ClientProtocolException", "Client");
+            e.printStackTrace();
+        } catch (IOException e) {
+            Log.e("Ioexception", "Ioexption");
+            e.printStackTrace();
+        }
+    }
+}

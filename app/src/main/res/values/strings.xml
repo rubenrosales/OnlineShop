@@ -7,5 +7,13 @@
     <string name="villian">E.V.I.L.</string>
     <string name="to_cart">GO TO CART</string>
     <string name="get_data">Get Data</string>
-
+    <string name="store_data">Store data</string>
+    <string name="login">Login</string>
+    <string name="signIn">SignUp</string>
+    <string name="email_signin">Email</string>
+    <string name="title_activity_welcome">welcome</string>
+    <string name="exit">exit</string>
+    <string name="logout">Logout</string>
+    <string name="cart">Cart</string>
+    <string name="checkout">Checkout</string>
 </resources>

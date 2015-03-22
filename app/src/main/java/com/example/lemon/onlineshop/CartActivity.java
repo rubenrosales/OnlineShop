@@ -19,7 +19,7 @@ import org.json.JSONObject;
 
 import java.util.ArrayList;
 import java.util.HashMap;
-import json.listview.library.JSONParser;
+import mysql.access.library.JSONParser;
 
 /**
  * Created by Andrey on 3/8/2015.
@@ -54,7 +54,8 @@ public class CartActivity extends Activity {
         });
     }
 
-    private class JSONParse extends AsyncTask<String, String, JSONObject> {
+
+    private class JSONParse extends AsyncTask <String, String, JSONObject> {
         private ProgressDialog pDialog;
         @Override
         protected void onPreExecute() {
@@ -72,7 +73,6 @@ public class CartActivity extends Activity {
         protected JSONObject doInBackground(String... args) {
             JSONParser jParser = new JSONParser();
             // Getting JSON from URL
-            //JSONObject json = jParser.getJSONFromUrl(url);
             return jParser.getJSONFromUrl(url);
         }
         @Override
@@ -112,5 +112,4 @@ public class CartActivity extends Activity {
             }
         }
     }
-
 }
