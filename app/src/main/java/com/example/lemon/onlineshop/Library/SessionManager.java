@@ -3,9 +3,18 @@ package com.example.lemon.onlineshop.Library;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.util.Log;
 
 import com.example.lemon.onlineshop.MainActivity;
 
+import org.apache.http.HttpResponse;
+import org.apache.http.client.ClientProtocolException;
+import org.apache.http.client.HttpClient;
+import org.apache.http.client.methods.HttpPost;
+import org.apache.http.impl.client.DefaultHttpClient;
+
+import java.io.IOException;
+import java.io.UnsupportedEncodingException;
 import java.util.HashMap;
 
 /**
@@ -38,6 +47,9 @@ public class SessionManager {
     // Email address (make variable public to access from outside)
     public static final String KEY_PASSWORD = "password";
 
+    //
+    public static final String KEY_ID = "id";
+
     // Constructor
     public SessionManager(Context context){
         this._context = context;
@@ -58,12 +70,38 @@ public class SessionManager {
         // Storing email in pref
         editor.putString(KEY_PASSWORD, password);
 
+        // Storing id in pref
+        //editor.putString(KEY_ID, getLoginId(email));
+        editor.putString(KEY_ID, email);
         // commit changes
         editor.commit();
     }
 
     /**
-     * Check login method wil check user login status
+     * Get user id from database
+     */
+    public String getLoginId (String email){
+        //TODO implemetn php script for that
+        String url_set = "http://csufshop.ozolin.ru/selectIdByEmail.php?email=" + email;
+        try {
+            HttpClient httpClient = new DefaultHttpClient();
+            HttpPost httpPost = new HttpPost(url_set);
+            HttpResponse response = httpClient.execute(httpPost);
+            return response.toString();
+        } catch (UnsupportedEncodingException e) {
+            e.printStackTrace();
+        } catch (ClientProtocolException e) {
+            Log.e("ClientProtocolException", "Client");
+            e.printStackTrace();
+        } catch (IOException e) {
+            Log.e("Ioexception", "Ioexption");
+            e.printStackTrace();
+        }
+        return null;
+    }
+
+    /**
+     * Check login method will check user login status
      * If false it will redirect user to login page
      * Else won't do anything
      * */
@@ -94,8 +132,11 @@ public class SessionManager {
         // user name
         user.put(KEY_EMAIL, pref.getString(KEY_EMAIL, null));
 
-        // user email id
+        // user email
         user.put(KEY_PASSWORD, pref.getString(KEY_PASSWORD, null));
+
+        // user id
+        user.put(KEY_ID, pref.getString(KEY_ID, null));
 
         // return user
         return user;

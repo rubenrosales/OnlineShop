@@ -1,14 +1,30 @@
 package com.example.lemon.onlineshop;
 
 import android.app.Activity;
+import android.app.ProgressDialog;
+import android.content.Intent;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.view.View;
+import android.widget.AdapterView;
 import android.widget.Button;
+import android.widget.ListAdapter;
+import android.widget.ListView;
+import android.widget.SimpleAdapter;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.example.lemon.onlineshop.Library.SessionManager;
 
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.util.ArrayList;
 import java.util.HashMap;
+
+import mysql.access.library.INSERTmySQL;
+import mysql.access.library.JSONParser;
 
 /**
  * Created by Andrey on 3/18/2015.
@@ -16,9 +32,26 @@ import java.util.HashMap;
  */
 public class HomeActivity extends Activity {
     SessionManager session;
+
+    ListView list;
+    TextView name;
+    TextView author;
+    TextView price;
+    ArrayList <HashMap<String, String> > songList = new ArrayList<>();
+    //URL to get JSON Array
+    private static String url = "http://csufshop.ozolin.ru/selectTop.php";
+    //JSON Node Names
+    private static final String TAG_ROWS = "rows";
+    private static final String TAG_ID = "idsong";
+    private static final String TAG_NAME = "name";
+    private static final String TAG_AUTHOR = "author";
+    private static final String TAG_PRICE = "price";
+    JSONArray android = null;
+
     Button btnCart;
     Button btnCheckout;
     Button btnLogout;
+    Button btnSearch;
 
     @Override
     public void onCreate (Bundle savedInstanceState){
@@ -31,6 +64,7 @@ public class HomeActivity extends Activity {
         btnCart = (Button) findViewById(R.id.btnCart);
         btnCheckout = (Button) findViewById(R.id.btnCheckout);
         btnLogout = (Button) findViewById(R.id.btnLogout);
+        btnSearch = (Button) findViewById(R.id.btnSearch);
         // Find textview
         TextView lblWelcome = (TextView) findViewById(R.id.tvWelcome);
         // Check if user logged in
@@ -40,11 +74,19 @@ public class HomeActivity extends Activity {
 
         String email = user.get(SessionManager.KEY_EMAIL);
         lblWelcome.setText("Welcome " + email);
+
+        // load list
+        songList = new ArrayList<>();
+        new requestSQL().execute();
+        // end of loading list
+
         // Cart button listner
         btnCart.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-
+                Intent intent = new Intent(getApplicationContext(), CartActivity.class);
+                startActivity(intent);
+                finish();
             }
         });
         // Logout button listner
@@ -60,8 +102,111 @@ public class HomeActivity extends Activity {
         btnCheckout.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                
+                Intent intent = new Intent(getApplicationContext(), CartActivity.class);
+                startActivity(intent);
+                finish();
+            }
+        });
+        // Search button listner
+        btnSearch.setOnClickListener(new View.OnClickListener(){
+            @Override
+            public  void onClick(View v) {
+                Intent intent = new Intent(getApplicationContext(), SearchActivity.class);
+                startActivity(intent);
+                finish();
             }
         });
     }
+
+    private class requestSQL extends AsyncTask<String, String, JSONObject> {
+        private ProgressDialog pDialog;
+        @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+            name = (TextView)findViewById(R.id.name);
+            author = (TextView)findViewById(R.id.author);
+            price = (TextView)findViewById(R.id.price);
+            pDialog = new ProgressDialog(HomeActivity.this);
+            pDialog.setMessage("Getting Data ...");
+            pDialog.setIndeterminate(false);
+            pDialog.setCancelable(true);
+            pDialog.show();
+        }
+        @Override
+        protected JSONObject doInBackground(String... args) {
+            JSONParser jParser = new JSONParser();
+            // Getting JSON from URL
+            return jParser.getJSONFromUrl(url);
+        }
+        @Override
+        protected void onPostExecute(JSONObject json) {
+            pDialog.dismiss();
+            try {
+                // Getting JSON Array from URL
+                android = json.getJSONArray(TAG_ROWS);
+                for(int i = 0; i < android.length(); i++){
+                    JSONObject c = android.getJSONObject(i);
+                    // Storing  JSON item in a Variable
+                    String id = c.getString(TAG_ID);
+                    String name = c.getString(TAG_NAME);
+                    String author = c.getString(TAG_AUTHOR);
+                    String price = "$" + c.getString(TAG_PRICE);
+                    // Adding value HashMap key => value
+                    HashMap<String, String> map = new HashMap<>();
+                    map.put(TAG_ID, id);
+                    map.put(TAG_NAME, name);
+                    map.put(TAG_AUTHOR, author);
+                    map.put(TAG_PRICE, price);
+                    songList.add(map);
+                    list=(ListView)findViewById(R.id.homeListView);
+                    ListAdapter adapter = new SimpleAdapter(HomeActivity.this, songList,
+                            R.layout.list_cart,
+                            new String[] { TAG_NAME, TAG_AUTHOR, TAG_PRICE }, new int[] {
+                            R.id.name,R.id.author, R.id.price});
+                    list.setAdapter(adapter);
+                    list.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+                        @Override
+                        public void onItemClick(AdapterView<?> parent, View view,
+                                                int position, long id) {
+                            Toast.makeText(HomeActivity.this, "You added " + songList.get(+position).get("name") + "with id "
+                                    + songList.get(+position).get("idsong") + " to cart", Toast.LENGTH_SHORT).show();
+                            // Need user id and song id to store in Cart
+                            HashMap<String, String> user = session.getUserDetails();
+                            String user_id = user.get(SessionManager.KEY_ID);
+                            //TODO BUG with user_id, it resolves to 0;
+                            new addToCart().execute(user_id, songList.get(+position).get("idsong"));
+                        }
+                    });
+                }
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
+    private class addToCart extends AsyncTask <String, String, String> {
+
+        private ProgressDialog pDialog;
+        @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+            pDialog = new ProgressDialog(HomeActivity.this);
+            pDialog.setMessage("Posting Data ...");
+            pDialog.setIndeterminate(false);
+            pDialog.setCancelable(true);
+            pDialog.show();
+        }
+
+        @Override
+        protected String doInBackground(String... params) {
+            INSERTmySQL insertToCart = new INSERTmySQL();
+            String a = params[0];
+            String b = params[1];
+            insertToCart.insertToCart(a, b);
+            pDialog.dismiss();
+            return null;
+        }
+
+    }
+
 }

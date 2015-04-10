@@ -39,7 +39,7 @@ public class MainActivity extends ActionBarActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-
+        // Declare alert dialog
         // TODO rework alert as http://stackoverflow.com/questions/13268302/alternative-setbutton
         final AlertDialog alertDialog = new AlertDialog.Builder(this).create();
         alertDialog.setButton("OK",new DialogInterface.OnClickListener() {
@@ -66,7 +66,7 @@ public class MainActivity extends ActionBarActivity {
         });
 
         Btnsignin = (Button) findViewById(R.id.signIn);
-        // Add email check, if same email already register
+        // TODO Add email check, if same email already register
         Btnsignin.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -83,8 +83,6 @@ public class MainActivity extends ActionBarActivity {
                 String email = emailView.getText().toString();
                 String password = passwordView.getText().toString();
                 new LogIn().execute(email, password);
-                alertDialog.setMessage("first is " + toCheck);
-                alertDialog.show();
                 // Check if username/password is filled
                 if(email.trim().length() > 0 && password.trim().length() > 0){
                     // For testing puspose username, password is checked with sample data
@@ -94,19 +92,16 @@ public class MainActivity extends ActionBarActivity {
                     if(password.equals(toCheck)){
                         // TODO fix problem when we need two login attempts
                         // after delete alertDialog
-                        alertDialog.setTitle(toCheck);
-                        alertDialog.setMessage("Similiar");
-                        alertDialog.show();
                         // Creating user login session
                         session.createLoginSession(email, password);
                         // Staring HomeActivity
-                        Intent i = new Intent(getApplicationContext(), HomeActivity.class);
-                        startActivity(i);
+                        Intent intent = new Intent(getApplicationContext(), HomeActivity.class);
+                        startActivity(intent);
                         finish();
 
                     }else{
                         alertDialog.setTitle("Login Failed");
-                        alertDialog.setMessage("Email and Password didn't match " + toCheck);
+                        alertDialog.setMessage("Email and Password didn't match, database returned " + toCheck);
                         alertDialog.show();
                     }
                 }else{
@@ -117,7 +112,6 @@ public class MainActivity extends ActionBarActivity {
             }
         });
     }
-
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -148,7 +142,7 @@ public class MainActivity extends ActionBarActivity {
         protected void onPreExecute() {
             super.onPreExecute();
             pDialog = new ProgressDialog(MainActivity.this);
-            pDialog.setMessage("Posting Data ...");
+            pDialog.setMessage("Creating profile ...");
             pDialog.setIndeterminate(false);
             pDialog.setCancelable(true);
             pDialog.show();

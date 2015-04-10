@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
-    <string name="app_name">OnlineShop</string>
+    <string name="app_name">E.V.I.L.</string>
     <string name="hello_world">Hello world!</string>
     <string name="action_settings">Settings</string>
     <string name="villian">E.V.I.L.</string>
@@ -16,4 +16,9 @@
     <string name="logout">Logout</string>
     <string name="cart">Cart</string>
     <string name="checkout">Checkout</string>
+    <string name="back_to_cart">Back to Cart</string>
+    <string name="search">Search</string>
+    <string name="go_home">Home</string>
+    <string name="by_song">By Song</string>
+    <string name="by_artist">By Artist</string>
 </resources>

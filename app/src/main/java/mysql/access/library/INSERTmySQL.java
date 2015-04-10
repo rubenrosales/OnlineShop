@@ -17,18 +17,20 @@ import java.io.UnsupportedEncodingException;
  *
  * */
 
+//TODO refactor, both method doing same with different strings
  public class INSERTmySQL {
 
     public INSERTmySQL(){
 
     }
 
-    public void insertMailAndPass(String email, String password) {
+    public String  insertMailAndPass(String email, String password) {
         String url_set = "http://csufshop.ozolin.ru/insert.php?email=" + email + "&password="+ password;
         try {
             HttpClient httpClient = new DefaultHttpClient();
             HttpPost httpPost = new HttpPost(url_set);
             HttpResponse response = httpClient.execute(httpPost);
+            return response.toString();
         } catch (UnsupportedEncodingException e) {
             e.printStackTrace();
         } catch (ClientProtocolException e) {
@@ -38,5 +40,22 @@ import java.io.UnsupportedEncodingException;
             Log.e("Ioexception", "Ioexption");
             e.printStackTrace();
         }
+        return null;
+    }
+
+    public void insertToCart (String user_id, String song_id){
+        String url_set = "http://csufshop.ozolin.ru/addToCart.php?user_id=" + user_id +"&song_id=" + song_id;
+        try {
+            HttpClient httpClient = new DefaultHttpClient();
+            HttpPost httpPost = new HttpPost(url_set);
+            HttpResponse response = httpClient.execute(httpPost);
+        } catch (ClientProtocolException e) {
+            Log.e("ClientProtocolException", "Client");
+            e.printStackTrace();
+        } catch (IOException e) {
+            Log.e("Ioexception", "Ioexption");
+            e.printStackTrace();
+        }
+
     }
 }
