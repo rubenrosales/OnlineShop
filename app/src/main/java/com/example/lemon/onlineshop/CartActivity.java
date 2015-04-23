@@ -13,6 +13,7 @@ import android.widget.ListView;
 import android.widget.SimpleAdapter;
 import android.widget.TextView;
 import android.widget.Toast;
+
 import com.example.lemon.onlineshop.Library.SessionManager;
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -34,6 +35,7 @@ public class CartActivity extends Activity {
     TextView price;
     ArrayList <HashMap<String, String> > songList = new ArrayList<>();
     Button btnGoHome;
+    Button btnCheckout;
     //URL to get JSON Array
     private static String url = "http://csufshop.ozolin.ru/selectFromCart.php?user_id=";
     //private static String url = "http://csufshop.ozolin.ru/selectTop.php";
@@ -70,6 +72,16 @@ public class CartActivity extends Activity {
             @Override
             public void onClick(View view) {
                 Intent intent = new Intent(getApplicationContext(), HomeActivity.class);
+                startActivity(intent);
+                finish();
+            }
+        });
+
+        btnCheckout = (Button)findViewById(R.id.btnCheckout);
+        btnCheckout.setOnClickListener(new View.OnClickListener(){
+            @Override
+            public  void  onClick(View view) {
+                Intent intent = new Intent(getApplicationContext(), CheckoutActivity.class);
                 startActivity(intent);
                 finish();
             }

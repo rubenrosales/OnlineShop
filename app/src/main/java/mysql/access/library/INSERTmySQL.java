@@ -58,4 +58,19 @@ import java.io.UnsupportedEncodingException;
         }
 
     }
+
+    public  void sendEmail (){
+        String url = "http://csufshop.ozolin.ru/selectFromCart.php";
+        try {
+            HttpClient httpClient = new DefaultHttpClient();
+            HttpPost httpPost = new HttpPost(url);
+            HttpResponse response = httpClient.execute(httpPost);
+        } catch (ClientProtocolException e) {
+            Log.e("ClientProtocolException", "Client");
+            e.printStackTrace();
+        } catch (IOException e) {
+            Log.e("Ioexception", "Ioexption");
+            e.printStackTrace();
+        }
+    }
 }
