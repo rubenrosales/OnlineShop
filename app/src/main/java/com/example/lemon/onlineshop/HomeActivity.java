@@ -32,7 +32,10 @@ import mysql.access.library.JSONParser;
  */
 public class HomeActivity extends Activity {
     SessionManager session;
-
+    String[] artist;
+    String[] artwork;
+    String[] songName;
+    LazyAdapter adapter;
     ListView list;
     TextView name;
     TextView author;
@@ -46,6 +49,7 @@ public class HomeActivity extends Activity {
     private static final String TAG_NAME = "name";
     private static final String TAG_AUTHOR = "author";
     private static final String TAG_PRICE = "price";
+    private static final String TAG_ARTWORK = "artwork";
     JSONArray android = null;
 
     Button btnCart;
@@ -57,6 +61,10 @@ public class HomeActivity extends Activity {
     public void onCreate (Bundle savedInstanceState){
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_home);
+
+        list=(ListView)findViewById(R.id.homeListView);
+
+        list.setAdapter(adapter);
 
         // Create session class instance
         session = new SessionManager(getApplicationContext());
@@ -142,15 +150,26 @@ public class HomeActivity extends Activity {
         protected void onPostExecute(JSONObject json) {
             pDialog.dismiss();
             try {
-                // Getting JSON Array from URL
                 android = json.getJSONArray(TAG_ROWS);
+                int size= android.length();
+                artist = new String[size];
+                songName = new String[size];
+                artwork = new String[size];
+
+                // Getting JSON Array from URL
+
                 for(int i = 0; i < android.length(); i++){
-                    JSONObject c = android.getJSONObject(i);
+                    JSONObject c = android.getJSONObject(i) ;
                     // Storing  JSON item in a Variable
                     String id = c.getString(TAG_ID);
                     String name = c.getString(TAG_NAME);
                     String author = c.getString(TAG_AUTHOR);
                     String price = "$" + c.getString(TAG_PRICE);
+                    String art = c.getString(TAG_ARTWORK);
+                    artist[i] = author;
+                    songName[i] = name;
+                    artwork[i] = art;
+
                     // Adding value HashMap key => value
                     HashMap<String, String> map = new HashMap<>();
                     map.put(TAG_ID, id);
@@ -158,31 +177,44 @@ public class HomeActivity extends Activity {
                     map.put(TAG_AUTHOR, author);
                     map.put(TAG_PRICE, price);
                     songList.add(map);
-                    list=(ListView)findViewById(R.id.homeListView);
-                    ListAdapter adapter = new SimpleAdapter(HomeActivity.this, songList,
-                            R.layout.list_cart,
-                            new String[] { TAG_NAME, TAG_AUTHOR, TAG_PRICE }, new int[] {
-                            R.id.name,R.id.author, R.id.price});
-                    list.setAdapter(adapter);
-                    list.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-                        @Override
-                        public void onItemClick(AdapterView<?> parent, View view,
-                                                int position, long id) {
-                            Toast.makeText(HomeActivity.this, "You added " + songList.get(+position).get("name") + "with id "
-                                    + songList.get(+position).get("idsong") + " to cart", Toast.LENGTH_SHORT).show();
-                            // Need user id and song id to store in Cart
-                            HashMap<String, String> user = session.getUserDetails();
-                            String user_id = user.get(SessionManager.KEY_ID);
-                            //TODO BUG with user_id, it resolves to 0;
-                            new addToCart().execute(user_id, songList.get(+position).get("idsong"));
-                        }
-                    });
+
+                    //ListAdapter adapter = new SimpleAdapter(HomeActivity.this, songList,
+                    //      R.layout.list_cart,
+                    //    new String[] { TAG_NAME, TAG_AUTHOR, TAG_PRICE }, new int[] {
+                    //  R.id.name,R.id.author, R.id.price});
+                    //list.setAdapter(adapter);
                 }
+
+                adapter=new LazyAdapter(HomeActivity.this, artwork,artist,songName);
+                list.setAdapter(adapter);
+
+                list.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+                    @Override
+                    public void onItemClick(AdapterView<?> parent, View view,
+                                            int position, long id) {
+                        Toast.makeText(HomeActivity.this, "You added " + songList.get(+position).get("name") + "with id "
+                                + songList.get(+position).get("idsong") + " to cart", Toast.LENGTH_SHORT).show();
+
+                        // Need user id and song id to store in Cart
+                        HashMap<String, String> user = session.getUserDetails();
+                        String user_id = user.get(SessionManager.KEY_ID);
+                        //TODO BUG with user_id, it resolves to 0;
+                        new addToCart().execute(user_id, songList.get(+position).get("idsong"));
+                    }
+                });
+
             } catch (JSONException e) {
                 e.printStackTrace();
             }
         }
     }
+    @Override
+    public void onDestroy()
+    {
+        list.setAdapter(null);
+        super.onDestroy();
+    }
+
 
     private class addToCart extends AsyncTask <String, String, String> {
 
