@@ -13,6 +13,15 @@ import android.widget.ListView;
 import android.widget.SimpleAdapter;
 import android.widget.TextView;
 import android.widget.Toast;
+import java.util.concurrent.TimeUnit;
+import android.widget.AdapterView.OnItemLongClickListener;
+import android.app.Activity;
+import android.media.MediaPlayer;
+import android.os.Bundle;
+import android.os.Handler;
+import android.view.View;
+import android.widget.SeekBar;
+import android.widget.TextView;
 
 import com.example.lemon.onlineshop.Library.SessionManager;
 
@@ -31,7 +40,9 @@ import mysql.access.library.JSONParser;
  * Home page activity for user
  */
 public class HomeActivity extends Activity {
+    int mySongs [] = new int[] {R.raw.song1,R.raw.song2,R.raw.song3,R.raw.song4,R.raw.song5,R.raw.song6,R.raw.song7,R.raw.song8,R.raw.song9,R.raw.song10};
     SessionManager session;
+    MediaPlayer mp = new MediaPlayer();
     String[] artist;
     String[] artwork;
     String[] songName;
@@ -187,19 +198,48 @@ public class HomeActivity extends Activity {
 
                 adapter=new LazyAdapter(HomeActivity.this, artwork,artist,songName);
                 list.setAdapter(adapter);
+                list.setLongClickable(true);
+                list.setOnItemLongClickListener(new OnItemLongClickListener() {
 
-                list.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-                    @Override
-                    public void onItemClick(AdapterView<?> parent, View view,
-                                            int position, long id) {
-                        Toast.makeText(HomeActivity.this, "You added " + songList.get(+position).get("name") + "with id "
-                                + songList.get(+position).get("idsong") + " to cart", Toast.LENGTH_SHORT).show();
+                    public boolean onItemLongClick(AdapterView<?> parent, View view,
+                                                   int position, long id) {
+                        Toast.makeText(HomeActivity.this, "You added " + songList.get(position).get("name") + "with id "
+                                + songList.get(position).get("idsong") + " to cart", Toast.LENGTH_SHORT).show();
 
                         // Need user id and song id to store in Cart
                         HashMap<String, String> user = session.getUserDetails();
                         String user_id = user.get(SessionManager.KEY_ID);
                         //TODO BUG with user_id, it resolves to 0;
-                        new addToCart().execute(user_id, songList.get(+position).get("idsong"));
+                        new addToCart().execute(user_id, songList.get(position).get("idsong"));
+                        return true;
+                    }
+                });
+                list.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+                    @Override
+                    public void onItemClick(AdapterView<?> parent, View view,
+                                            int position, long id) {
+
+                        //song playing starts here
+                        //change to something if(.... == Spongebob)
+                       // if (list.getItemIdAtPosition(position) == 1) {
+                        if(mp.isPlaying()){
+                            mp.stop();
+                        }else {
+                            mp = MediaPlayer.create(HomeActivity.this, mySongs[position]);
+
+                            //int mp3Resource = getResources().getIdentifier(mySounds[position],"raw",MediaPlayer.create(getApplicationContext(),R.raw.sound1);
+                            // mp.prepare();
+                            mp.start();
+                           // mp.setOnCompletionListener(onCompletionListener);
+                        }
+
+                        //this stops the song when it finishes i cant get it to work
+                           /* mp.setOnCompletionListener(new OnCompletionListener() {
+                                public void onCompletion(MediaPlayer mp) {
+                                    mp.release();
+                                }
+                            });*/
+                      //  }
                     }
                 });
 
