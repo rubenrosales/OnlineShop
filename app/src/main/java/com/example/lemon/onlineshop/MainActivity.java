@@ -24,6 +24,8 @@ import mysql.access.library.JSONParser;
 
 
 public class MainActivity extends ActionBarActivity {
+    String LogInEmail = "";
+    String LogInPassword = "";
     Button Btngotocart;
     Button Btnsignin;
     Button Btnlogin;
@@ -80,39 +82,47 @@ public class MainActivity extends ActionBarActivity {
         Btnlogin.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                String email = emailView.getText().toString();
-                String password = passwordView.getText().toString();
-                new LogIn().execute(email, password);
-                // Check if username/password is filled
-                if(email.trim().length() > 0 && password.trim().length() > 0){
-                    // For testing puspose username, password is checked with sample data
-                    // email = test@test.com
-                    // password = test
-                    // if (password == getPasswordByEmail( String email))
-                    if(password.equals(toCheck)){
-                        // TODO fix problem when we need two login attempts
-                        // after delete alertDialog
-                        // Creating user login session
-                        session.createLoginSession(email, password);
-                        // Staring HomeActivity
-                        Intent intent = new Intent(getApplicationContext(), HomeActivity.class);
-                        startActivity(intent);
-                        finish();
 
-                    }else{
-                        alertDialog.setTitle("Login Failed");
-                        alertDialog.setMessage("Email and Password didn't match, database returned " + toCheck);
-                        alertDialog.show();
-                    }
-                }else{
-                    alertDialog.setTitle("Login Failed");
-                    alertDialog.setMessage("Incorrect Email or Password");
-                    alertDialog.show();
-                }
+                LogInEmail = emailView.getText().toString();
+                LogInPassword = passwordView.getText().toString();
+                new LogIn().execute(LogInEmail, LogInPassword);
+
+                // Check if username/password is filled
+
             }
         });
     }
+    public void executeLogIn(){
+        final AlertDialog alertDialog = new AlertDialog.Builder(this).create();
+        String email = LogInEmail;
+        String password = LogInPassword;
 
+        if(email.trim().length() > 0 && password.trim().length() > 0){
+            // For testing puspose username, password is checked with sample data
+            // email = test@test.com
+            // password = test
+            // if (password == getPasswordByEmail( String email))
+            if(password.equals(toCheck)){
+                // TODO fix problem when we need two login attempts
+                // after delete alertDialog
+                // Creating user login session
+                session.createLoginSession(email, password);
+                // Staring HomeActivity
+                Intent intent = new Intent(getApplicationContext(), HomeActivity.class);
+                startActivity(intent);
+                finish();
+
+            }else{
+                alertDialog.setTitle("Login Failed");
+                alertDialog.setMessage("Email and Password didn't match, database returned " + toCheck);
+                alertDialog.show();
+            }
+        }else{
+            alertDialog.setTitle("Login Failed");
+            alertDialog.setMessage("Incorrect Email or Password"+email.trim().length());
+            alertDialog.show();
+        }
+    }
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
@@ -191,6 +201,8 @@ public class MainActivity extends ActionBarActivity {
                     // Storing  JSON item in a Variable
                     //String password = c.getString(TAG_PASSWORD);
                     toCheck = c.getString(TAG_PASSWORD);
+
+                executeLogIn();
             } catch (JSONException e) {
                 e.printStackTrace();
             }
