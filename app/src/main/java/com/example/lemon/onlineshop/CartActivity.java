@@ -29,6 +29,12 @@ import mysql.access.library.JSONParser;
 public class CartActivity extends Activity {
     SessionManager session;
 
+    String[] artist;
+    String[] artwork;
+    String[] songName;
+    String [] priceArray;
+
+
     ListView list;
     TextView name;
     TextView author;
@@ -45,6 +51,7 @@ public class CartActivity extends Activity {
     private static final String TAG_NAME = "name";
     private static final String TAG_AUTHOR = "author";
     private static final String TAG_PRICE = "price";
+    private static final String TAG_ARTWORK = "artwork";
     JSONArray android = null;
 
 
@@ -116,6 +123,12 @@ public class CartActivity extends Activity {
             try {
                 // Getting JSON Array from URL
                 android = json.getJSONArray(TAG_ROWS);
+                int size= android.length();
+                artist = new String[size];
+                songName = new String[size];
+                artwork = new String[size];
+                priceArray = new String[size];
+
                 for(int i = 0; i < android.length(); i++){
                     JSONObject c = android.getJSONObject(i);
                     // Storing  JSON item in a Variable
@@ -123,6 +136,12 @@ public class CartActivity extends Activity {
                     String name = c.getString(TAG_NAME);
                     String author = c.getString(TAG_AUTHOR);
                     String price = "$" + c.getString(TAG_PRICE);
+                    String art = c.getString(TAG_ARTWORK);
+                    artist[i] = author;
+                    songName[i] = name;
+                    artwork[i] = art;
+                    priceArray[i] = price;
+
                     // Adding value HashMap key => value
                     HashMap<String, String> map = new HashMap<>();
                     map.put(TAG_ID, id);
@@ -130,12 +149,11 @@ public class CartActivity extends Activity {
                     map.put(TAG_AUTHOR, author);
                     map.put(TAG_PRICE, price);
                     songList.add(map);
+
                     list=(ListView)findViewById(R.id.list);
-                    ListAdapter adapter = new SimpleAdapter(CartActivity.this, songList,
-                            R.layout.list_cart,
-                            new String[] { TAG_NAME, TAG_AUTHOR, TAG_PRICE }, new int[] {
-                            R.id.name,R.id.author, R.id.price});
+                    LazyAdapter adapter = new LazyAdapter(CartActivity.this, artwork,artist,songName,priceArray);
                     list.setAdapter(adapter);
+
                     list.setOnItemClickListener(new AdapterView.OnItemClickListener() {
                         @Override
                         public void onItemClick(AdapterView<?> parent, View view,

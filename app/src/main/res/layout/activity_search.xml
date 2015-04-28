@@ -31,30 +31,40 @@
         android:id="@+id/btnGoHome"
         android:layout_alignParentBottom="true"
         android:layout_centerHorizontal="true" />
+
+
+    <RadioGroup
+        android:layout_width="fill_parent"
+        android:layout_height="50dp"
+        android:layout_below="@+id/btnSearch"
+        android:orientation="horizontal"
+        android:checkedButton="@+id/rbArtist"
+        android:id="@+id/radioGroup">
+
+        <RadioButton
+            android:layout_width="150dp"
+            android:layout_height="wrap_content"
+            android:text="by artist"
+            android:id="@+id/rbArtist"
+            />
+
+        <RadioButton
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="by song"
+            android:id="@+id/rbSong"
+        />
+
+    </RadioGroup>
+
     <ListView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:id="@+id/homeListView"
+        android:layout_below="@+id/radioGroup"
         android:layout_above="@+id/btnGoHome"
-        android:layout_below="@+id/rbArtist" />
-
-    <RadioButton
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="@string/by_artist"
-        android:id="@+id/rbArtist"
-        android:layout_below="@+id/twSearch"
-        android:layout_alignLeft="@+id/twSearch"
-        android:layout_alignStart="@+id/twSearch" />
-
-    <RadioButton
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="@string/by_song"
-        android:id="@+id/rbSong"
-        android:layout_below="@+id/twSearch"
-        android:layout_alignLeft="@+id/btnGoHome"
-        android:layout_alignStart="@+id/btnGoHome" />
+        android:layout_alignParentRight="true"
+        android:layout_alignParentEnd="true" />
 
 
 </RelativeLayout>

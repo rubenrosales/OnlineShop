@@ -19,13 +19,15 @@ public class LazyAdapter extends BaseAdapter {
     private String[] artistArray;
     private String[] songArray;
     private String[] artworkArray;
+    private String[] priceArray;
 
-    public LazyAdapter(Activity a, String[] artwork,String[] artist, String[] song ) {
+    public LazyAdapter(Activity a, String[] artwork,String[] artist, String[] song,  String [] price ) {
 
         activity = a;
         artworkArray = artwork;
         artistArray = artist;
         songArray = song;
+        priceArray = price;
 
         inflater = (LayoutInflater)activity.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         imageLoader=new ImageLoader(activity.getApplicationContext());
@@ -52,7 +54,7 @@ public class LazyAdapter extends BaseAdapter {
 
             TextView text = (TextView) vi.findViewById(R.id.text);
             ImageView image = (ImageView) vi.findViewById(R.id.image);
-            text.setText(artistArray[position]+ " - " + songArray[position]);
+            text.setText(artistArray[position]+ " - " + songArray[position]+ "  "+ priceArray[position]);
             imageLoader.DisplayImage(artworkArray[position], image);
 
 

@@ -46,6 +46,7 @@ public class HomeActivity extends Activity {
     String[] artist;
     String[] artwork;
     String[] songName;
+    String [] priceArray;
     LazyAdapter adapter;
     ListView list;
     TextView name;
@@ -72,6 +73,7 @@ public class HomeActivity extends Activity {
     public void onCreate (Bundle savedInstanceState){
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_home);
+
 
         list=(ListView)findViewById(R.id.homeListView);
 
@@ -103,6 +105,7 @@ public class HomeActivity extends Activity {
         btnCart.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                if(mp.isPlaying()){ mp.stop();  }
                 Intent intent = new Intent(getApplicationContext(), CartActivity.class);
                 startActivity(intent);
                 finish();
@@ -114,6 +117,7 @@ public class HomeActivity extends Activity {
             public void onClick(View v) {
                 // Clear the session data and
                 // redirect user to MainActivity
+                if(mp.isPlaying()){ mp.stop();  }
                 session.logoutUser();
             }
         });
@@ -121,6 +125,7 @@ public class HomeActivity extends Activity {
         btnCheckout.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                if(mp.isPlaying()){ mp.stop();  }
                 Intent intent = new Intent(getApplicationContext(), CartActivity.class);
                 startActivity(intent);
                 finish();
@@ -130,6 +135,7 @@ public class HomeActivity extends Activity {
         btnSearch.setOnClickListener(new View.OnClickListener(){
             @Override
             public  void onClick(View v) {
+                if(mp.isPlaying()){ mp.stop();  }
                 Intent intent = new Intent(getApplicationContext(), SearchActivity.class);
                 startActivity(intent);
                 finish();
@@ -142,9 +148,7 @@ public class HomeActivity extends Activity {
         @Override
         protected void onPreExecute() {
             super.onPreExecute();
-            name = (TextView)findViewById(R.id.name);
-            author = (TextView)findViewById(R.id.author);
-            price = (TextView)findViewById(R.id.price);
+
             pDialog = new ProgressDialog(HomeActivity.this);
             pDialog.setMessage("Getting Data ...");
             pDialog.setIndeterminate(false);
@@ -166,7 +170,7 @@ public class HomeActivity extends Activity {
                 artist = new String[size];
                 songName = new String[size];
                 artwork = new String[size];
-
+                priceArray = new String[size];
                 // Getting JSON Array from URL
 
                 for(int i = 0; i < android.length(); i++){
@@ -180,7 +184,7 @@ public class HomeActivity extends Activity {
                     artist[i] = author;
                     songName[i] = name;
                     artwork[i] = art;
-
+                    priceArray[i] = price;
                     // Adding value HashMap key => value
                     HashMap<String, String> map = new HashMap<>();
                     map.put(TAG_ID, id);
@@ -196,7 +200,7 @@ public class HomeActivity extends Activity {
                     //list.setAdapter(adapter);
                 }
 
-                adapter=new LazyAdapter(HomeActivity.this, artwork,artist,songName);
+                adapter=new LazyAdapter(HomeActivity.this, artwork,artist,songName,priceArray);
                 list.setAdapter(adapter);
                 list.setLongClickable(true);
                 list.setOnItemLongClickListener(new OnItemLongClickListener() {
@@ -225,11 +229,18 @@ public class HomeActivity extends Activity {
                         if(mp.isPlaying()){
                             mp.stop();
                         }else {
+                           // mp.setAudioStreamType(AudioManager.STREAM_MUSIC);
                             mp = MediaPlayer.create(HomeActivity.this, mySongs[position]);
 
                             //int mp3Resource = getResources().getIdentifier(mySounds[position],"raw",MediaPlayer.create(getApplicationContext(),R.raw.sound1);
                             // mp.prepare();
                             mp.start();
+                            new Handler().postDelayed(new Runnable() {
+                                @Override
+                                public void run() {
+                                    mp.reset();
+                                }
+                            }, 30000);
                            // mp.setOnCompletionListener(onCompletionListener);
                         }
 

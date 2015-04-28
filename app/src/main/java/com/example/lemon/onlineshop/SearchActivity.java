@@ -11,11 +11,10 @@ import android.view.View;
 import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.ListAdapter;
 import android.widget.ListView;
-import android.widget.SimpleAdapter;
 import android.widget.TextView;
 import android.widget.Toast;
+import android.widget.RadioButton;
 
 import com.example.lemon.onlineshop.Library.SessionManager;
 
@@ -26,6 +25,7 @@ import org.json.JSONObject;
 import java.util.ArrayList;
 import java.util.HashMap;
 
+import mysql.access.library.INSERTmySQL;
 import mysql.access.library.JSONParser;
 
 /**
@@ -36,15 +36,25 @@ public class SearchActivity extends Activity {
     TextView name;
     TextView city;
     TextView phone;
-
+    String isArtist;
+    String[] artist;
+    String[] artwork;
+    String[] songName;
+    String[] priceArray;
+    String fullURL;
+    LazyAdapter lAdapter;
+    String searchText;
+    JSONObject jsonURL;
     ArrayList<HashMap<String, String>> songList = new ArrayList<>();
     SessionManager session;
     //JSON Node Names
     private static final String TAG_ROWS = "rows";
+    private static final String TAG_ID = "idsong";
     private static final String TAG_NAME = "name";
-    private static final String TAG_CITY = "city";
-    private static final String TAG_PHONE = "phone";
-    JSONArray android = null;
+    private static final String TAG_AUTHOR = "author";
+    private static final String TAG_PRICE = "price";
+    private static final String TAG_ARTWORK = "artwork";
+    JSONArray sAndroid = null;
 
     Button btnSearch;
     Button btnBackHome;
@@ -76,7 +86,19 @@ public class SearchActivity extends Activity {
             @Override
             public void onClick(View v) {
                 final String searchField = searchView.getText().toString();
-                new Search().execute(searchField);
+                final RadioButton rb = (RadioButton) findViewById(R.id.rbArtist);
+                searchText = searchField;
+
+               if(rb.isChecked())
+                {
+                    isArtist = "artist";
+                    new Search().execute(searchField);
+                }
+                else{
+                    isArtist = "song";
+                    new Search().execute(searchField);
+                }
+
             }
         });
 
@@ -89,15 +111,36 @@ public class SearchActivity extends Activity {
             }
         });
     }
+    private class addToCart extends AsyncTask <String, String, String> {
 
+        private ProgressDialog pDialog;
+        @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+            pDialog = new ProgressDialog(SearchActivity.this);
+            pDialog.setMessage("Posting Data ...");
+            pDialog.setIndeterminate(false);
+            pDialog.setCancelable(true);
+            pDialog.show();
+        }
+
+        @Override
+        protected String doInBackground(String... params) {
+            INSERTmySQL insertToCart = new INSERTmySQL();
+            String a = params[0];
+            String b = params[1];
+            insertToCart.insertToCart(a, b);
+            pDialog.dismiss();
+            return null;
+        }
+
+    }
     private class Search extends AsyncTask <String, String, JSONObject> {
         private ProgressDialog pDialog;
         @Override
         protected void onPreExecute() {
             super.onPreExecute();
-            name = (TextView)findViewById(R.id.name);
-            city = (TextView)findViewById(R.id.city);
-            phone = (TextView) findViewById(R.id.phone);
+
             pDialog = new ProgressDialog(SearchActivity.this);
             pDialog.setMessage("Searching ...");
             pDialog.setIndeterminate(false);
@@ -108,42 +151,74 @@ public class SearchActivity extends Activity {
         protected JSONObject doInBackground(String... args) {
             JSONParser jParser = new JSONParser();
             // Getting JSON from URL
-            String searchAttribute = args[0];
-            return jParser.getJSONFromUrl(urlSearch + searchAttribute);
-        }
+
+            fullURL = urlSearch + searchText+","+isArtist;
+            //jsonURL = jParser.getJSONFromUrl("http://csufshop.ozolin.ru/test_search.php?name=Diplo,artist");
+            return jParser.getJSONFromUrl(fullURL);
+    }
         @Override
         protected void onPostExecute(JSONObject json) {
             pDialog.dismiss();
             try {
+
+
+
+
                 // Getting JSON Array from URL
-                android = json.getJSONArray(TAG_ROWS);
-                for(int i = 0; i < android.length(); i++){
-                    JSONObject c = android.getJSONObject(i);
-                    // Storing  JSON item in a Variable
-                    String ver = c.getString(TAG_NAME);
-                    String name = c.getString(TAG_CITY);
-                    String api = c.getString(TAG_PHONE);
+                sAndroid = json.getJSONArray(TAG_ROWS);
+                Integer size= sAndroid.length();
+
+
+
+
+                artist = new String[size];
+                songName = new String[size];
+                artwork = new String[size];
+                priceArray = new String[size];
+
+                for(int i = 0; i < sAndroid.length(); i++){
+                    JSONObject c = sAndroid.getJSONObject(i);
+                    String id = c.getString(TAG_ID);
+                    String name = c.getString(TAG_NAME);
+                    String author = c.getString(TAG_AUTHOR);
+                    String price = "$" + c.getString(TAG_PRICE);
+                    String art = c.getString(TAG_ARTWORK);
+                    artist[i] = author;
+                    songName[i] = name;
+                    artwork[i] = art;
+                    priceArray[i] = price;
                     // Adding value HashMap key => value
-                    HashMap <String, String> map = new HashMap<>();
-                    map.put(TAG_NAME, ver);
-                    map.put(TAG_CITY, name);
-                    map.put(TAG_PHONE, api);
+                    HashMap<String, String> map = new HashMap<>();
+                    map.put(TAG_ID, id);
+                    map.put(TAG_NAME, name);
+                    map.put(TAG_AUTHOR, author);
+                    map.put(TAG_PRICE, price);
                     songList.add(map);
+
                     list=(ListView)findViewById(R.id.homeListView);
-                    ListAdapter adapter = new SimpleAdapter(SearchActivity.this, songList,
-                            R.layout.list_search_results,
-                            new String[] { TAG_NAME,TAG_CITY, TAG_PHONE }, new int[] {
-                            R.id.name,R.id.city, R.id.phone});
-                    list.setAdapter(adapter);
-                    list.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-                        @Override
-                        public void onItemClick(AdapterView<?> parent, View view,
-                                                int position, long id) {
-                            Toast.makeText(SearchActivity.this, "You added " + songList.get(+position).get("name") + " to cart.", Toast.LENGTH_SHORT).show();
-                            // TODO insert here post data to db via url
+                    lAdapter = new LazyAdapter(SearchActivity.this, artwork,artist,songName,priceArray);
+                    list.setAdapter(lAdapter);
+                    list.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
+
+                        public boolean onItemLongClick(AdapterView<?> parent, View view,
+                                                       int position, long id) {
+                            Toast.makeText(SearchActivity.this, "You added " + songList.get(position).get("name") + "with id "
+                                    + songList.get(position).get("idsong") + " to cart", Toast.LENGTH_SHORT).show();
+
+                            // Need user id and song id to store in Cart
+                            HashMap<String, String> user = session.getUserDetails();
+                            String user_id = user.get(SessionManager.KEY_ID);
+                            //TODO BUG with user_id, it resolves to 0;
+                            new addToCart().execute(user_id, songList.get(position).get("idsong"));
+                            return true;
                         }
                     });
+                    if(size == null){
+                        list.setAdapter(null);
+                    }
                 }
+
+
             } catch (JSONException e) {
                 e.printStackTrace();
             }
