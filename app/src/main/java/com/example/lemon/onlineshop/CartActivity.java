@@ -20,6 +20,8 @@ import org.json.JSONException;
 import org.json.JSONObject;
 import java.util.ArrayList;
 import java.util.HashMap;
+
+import mysql.access.library.INSERTmySQL;
 import mysql.access.library.JSONParser;
 
 /**
@@ -39,12 +41,12 @@ public class CartActivity extends Activity {
     TextView name;
     TextView author;
     TextView price;
+    TextView allPrice;
     ArrayList <HashMap<String, String> > songList = new ArrayList<>();
     Button btnGoHome;
     Button btnCheckout;
     //URL to get JSON Array
     private static String url = "http://csufshop.ozolin.ru/selectFromCart.php?user_id=";
-    //private static String url = "http://csufshop.ozolin.ru/selectTop.php";
     //JSON Node Names
     private static final String TAG_ROWS = "rows";
     private static final String TAG_ID = "idsong";
@@ -53,7 +55,7 @@ public class CartActivity extends Activity {
     private static final String TAG_PRICE = "price";
     private static final String TAG_ARTWORK = "artwork";
     JSONArray android = null;
-
+    String summaryPrice;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -68,11 +70,16 @@ public class CartActivity extends Activity {
         HashMap<String, String> user = session.getUserDetails();
 
         String user_id = user.get(SessionManager.KEY_ID);
+        new countSummaryPrice().execute(user_id);
 
         // load list
         songList = new ArrayList<>();
         new requestSQL().execute(user_id);
         // end of loading list
+
+
+        allPrice=(TextView)findViewById(R.id.twTotalCost);
+        allPrice.setText("Total Cost: $" + summaryPrice);
 
         btnGoHome = (Button)findViewById(R.id.goHome);
         btnGoHome.setOnClickListener(new View.OnClickListener() {
@@ -165,10 +172,73 @@ public class CartActivity extends Activity {
                             //String user_id = user.get(SessionManager.KEY_ID);
                             //TODO BUG with user_id, it resolves to 0;
                             //TODO change from addToCart to delete;
-                            //new addToCart().execute(user_id, songList.get(+position).get("idsong"));
+                            HashMap<String, String> user = session.getUserDetails();
+                            String user_id = user.get(SessionManager.KEY_ID);
+                            new removeFromCart().execute(user_id, songList.get(+position).get("idsong"));
                         }
                     });
                 }
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
+    private class removeFromCart extends AsyncTask <String, String, String> {
+
+        private ProgressDialog pDialog;
+        @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+            pDialog = new ProgressDialog(CartActivity.this);
+            pDialog.setMessage("Removing from cart ...");
+            pDialog.setIndeterminate(false);
+            pDialog.setCancelable(true);
+            pDialog.show();
+        }
+
+        @Override
+        protected String doInBackground(String... params) {
+            INSERTmySQL deleteFromCart = new INSERTmySQL();
+            String a = params[0];
+            String b = params[1];
+            deleteFromCart.deleteFromCart(a, b);
+            pDialog.dismiss();
+            return null;
+        }
+    }
+
+    private class countSummaryPrice extends AsyncTask <String, String, JSONObject> {
+        String url_set = "http://csufshop.ozolin.ru/totalCostByUserId.php?user_id=";
+        private  ProgressDialog pDialog;
+        @Override
+        protected  void onPreExecute() {
+            super.onPreExecute();
+            pDialog = new ProgressDialog(CartActivity.this);
+            //pDialog.setMessage("Login in ...");
+            pDialog.setIndeterminate(false);
+            pDialog.setCancelable(true);
+            pDialog.show();
+        }
+
+        @Override
+        protected JSONObject doInBackground(String... params) {
+            JSONParser jParser = new JSONParser();
+            String userid = params[0];
+            // Getting JSON from URL
+            return jParser.getJSONFromUrl(url_set+userid);
+        }
+
+        @Override
+        protected void onPostExecute(JSONObject json) {
+            pDialog.dismiss();
+            try {
+                // Getting JSON Array from URL
+                android = json.getJSONArray(TAG_ROWS);
+                JSONObject object = android.getJSONObject(0);
+                // Storing  JSON item in a Variable
+                //String password = c.getString(TAG_PASSWORD);
+                summaryPrice = object.getString(TAG_PRICE);
             } catch (JSONException e) {
                 e.printStackTrace();
             }

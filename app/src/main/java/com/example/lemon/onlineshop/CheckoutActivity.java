@@ -32,7 +32,7 @@ public class CheckoutActivity extends Activity {
 
         session.checkLogin();
         // get user data from session
-        HashMap<String, String> user = session.getUserDetails();
+        final HashMap<String, String> user = session.getUserDetails();
 
 
         btnGoToCart = (Button)findViewById(R.id.goCart);
@@ -49,7 +49,7 @@ public class CheckoutActivity extends Activity {
         btnPurchase.setOnClickListener(new View.OnClickListener(){
             @Override
             public  void  onClick(View view) {
-                new SendMail().execute();
+                new SendMail().execute(user.get(SessionManager.KEY_EMAIL));
                 Intent intent = new Intent(getApplication(), HomeActivity.class);
                 startActivity(intent);
                 finish();
@@ -73,7 +73,8 @@ public class CheckoutActivity extends Activity {
         @Override
         protected String doInBackground(String... params) {
             INSERTmySQL insertToCart = new INSERTmySQL();
-            insertToCart.sendEmail();
+            String email = params[0];
+            insertToCart.sendEmail(email);
             pDialog.dismiss();
             return null;
         }

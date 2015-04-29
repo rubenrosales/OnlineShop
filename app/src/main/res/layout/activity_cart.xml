@@ -11,8 +11,8 @@
         android:id="@+id/list"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
-        android:layout_below="@+id/twTotalCost"
-        android:layout_above="@+id/textView3" />
+        android:layout_alignParentTop="true"
+        android:layout_above="@+id/twTotalCost" />
     <Button
         android:id="@+id/goHome"
         android:layout_width="wrap_content"
@@ -36,18 +36,8 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:textAppearance="?android:attr/textAppearanceLarge"
-        android:text="Total Cost"
+        android:text="Total Cost: $0"
         android:id="@+id/twTotalCost"
-        android:layout_alignParentTop="true"
-        android:layout_alignLeft="@+id/textView3"
-        android:layout_alignStart="@+id/textView3" />
-
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:textAppearance="?android:attr/textAppearanceLarge"
-        android:text="Total Cost"
-        android:id="@+id/textView3"
         android:layout_above="@+id/goHome"
         android:layout_toRightOf="@+id/goHome"
         android:layout_toEndOf="@+id/goHome" />

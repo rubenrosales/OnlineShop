@@ -308,7 +308,6 @@ public class HomeActivity extends Activity {
             pDialog.dismiss();
             return null;
         }
-
     }
 
 }
