@@ -26,15 +26,16 @@ import mysql.access.library.JSONParser;
 public class MainActivity extends ActionBarActivity {
     String LogInEmail = "";
     String LogInPassword = "";
-    Button Btngotocart;
     Button Btnsignin;
     Button Btnlogin;
     SessionManager session;
-    String toCheck = null;
+    String toCheck;
+    String userId;
     private static String url = "http://csufshop.ozolin.ru/selectPasswordByEmail.php?email=";
     //JSON Node Names
     private static final String TAG_ROWS = "rows";
     private static final String TAG_PASSWORD = "password";
+    private static final String TAG_ID = "iduser";
     JSONArray android = null;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -52,20 +53,10 @@ public class MainActivity extends ActionBarActivity {
         });
 
         session = new SessionManager(getApplicationContext());
-        Toast.makeText(getApplicationContext(), "User Login Status: " + session.isLoggedIn(), Toast.LENGTH_LONG).show();
         // Alert Dialog Manager
 
         final EditText emailView = (EditText) findViewById(R.id.editTextEmail);
         final EditText passwordView = (EditText) findViewById(R.id.editTextPassword);
-
-        Btngotocart = (Button)findViewById(R.id.gotocart);
-        Btngotocart.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent intent = new Intent(MainActivity.this, CartActivity.class);
-                startActivity(intent);
-            }
-        });
 
         Btnsignin = (Button) findViewById(R.id.signIn);
         // TODO Add email check, if same email already register
@@ -85,13 +76,12 @@ public class MainActivity extends ActionBarActivity {
 
                 LogInEmail = emailView.getText().toString();
                 LogInPassword = passwordView.getText().toString();
+                new getUserId().execute(LogInEmail);
                 new LogIn().execute(LogInEmail, LogInPassword);
-
-                // Check if username/password is filled
-
             }
         });
     }
+    //Description:
     public void executeLogIn(){
         final AlertDialog alertDialog = new AlertDialog.Builder(this).create();
         String email = LogInEmail;
@@ -106,7 +96,7 @@ public class MainActivity extends ActionBarActivity {
                 // TODO fix problem when we need two login attempts
                 // after delete alertDialog
                 // Creating user login session
-                session.createLoginSession(email, password);
+                session.createLoginSession(email, password, userId);
                 // Staring HomeActivity
                 Intent intent = new Intent(getApplicationContext(), HomeActivity.class);
                 startActivity(intent);
@@ -203,6 +193,43 @@ public class MainActivity extends ActionBarActivity {
                     toCheck = c.getString(TAG_PASSWORD);
 
                 executeLogIn();
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
+    private class getUserId extends AsyncTask <String, String, JSONObject> {
+        String url_set = "http://csufshop.ozolin.ru/selectIdByEmail.php?email=";
+        private  ProgressDialog pDialog;
+        @Override
+        protected  void onPreExecute() {
+            super.onPreExecute();
+            pDialog = new ProgressDialog(MainActivity.this);
+            pDialog.setMessage("Login in ...");
+            pDialog.setIndeterminate(false);
+            pDialog.setCancelable(true);
+            pDialog.show();
+        }
+
+        @Override
+        protected JSONObject doInBackground(String... params) {
+            JSONParser jParser = new JSONParser();
+            String email = params[0];
+            // Getting JSON from URL
+            return jParser.getJSONFromUrl(url_set+email);
+        }
+
+        @Override
+        protected void onPostExecute(JSONObject json) {
+            pDialog.dismiss();
+            try {
+                // Getting JSON Array from URL
+                android = json.getJSONArray(TAG_ROWS);
+                JSONObject c = android.getJSONObject(0);
+                // Storing  JSON item in a Variable
+                //String password = c.getString(TAG_PASSWORD);
+                userId = c.getString(TAG_ID);
             } catch (JSONException e) {
                 e.printStackTrace();
             }

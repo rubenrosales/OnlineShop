@@ -60,7 +60,7 @@ public class SessionManager {
     /**
      * Create login session
      * */
-    public void createLoginSession(String email, String password){
+    public void createLoginSession(String email, String password, String id){
         // Storing login value as TRUE
         editor.putBoolean(IS_LOGIN, true);
 
@@ -71,33 +71,9 @@ public class SessionManager {
         editor.putString(KEY_PASSWORD, password);
 
         // Storing id in pref
-        //editor.putString(KEY_ID, getLoginId(email));
-        editor.putString(KEY_ID, email);
+        editor.putString(KEY_ID, id);
         // commit changes
         editor.commit();
-    }
-
-    /**
-     * Get user id from database
-     */
-    public String getLoginId (String email){
-        //TODO implemetn php script for that
-        String url_set = "http://csufshop.ozolin.ru/selectIdByEmail.php?email=" + email;
-        try {
-            HttpClient httpClient = new DefaultHttpClient();
-            HttpPost httpPost = new HttpPost(url_set);
-            HttpResponse response = httpClient.execute(httpPost);
-            return response.toString();
-        } catch (UnsupportedEncodingException e) {
-            e.printStackTrace();
-        } catch (ClientProtocolException e) {
-            Log.e("ClientProtocolException", "Client");
-            e.printStackTrace();
-        } catch (IOException e) {
-            Log.e("Ioexception", "Ioexption");
-            e.printStackTrace();
-        }
-        return null;
     }
 
     /**
