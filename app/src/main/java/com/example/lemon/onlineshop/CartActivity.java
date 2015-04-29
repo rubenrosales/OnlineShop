@@ -70,16 +70,15 @@ public class CartActivity extends Activity {
         HashMap<String, String> user = session.getUserDetails();
 
         String user_id = user.get(SessionManager.KEY_ID);
+
         new countSummaryPrice().execute(user_id);
+
+
 
         // load list
         songList = new ArrayList<>();
         new requestSQL().execute(user_id);
         // end of loading list
-
-
-        allPrice=(TextView)findViewById(R.id.twTotalCost);
-        allPrice.setText("Total Cost: $" + summaryPrice);
 
         btnGoHome = (Button)findViewById(R.id.goHome);
         btnGoHome.setOnClickListener(new View.OnClickListener() {
@@ -102,6 +101,11 @@ public class CartActivity extends Activity {
         });
     }
 
+    public void executeCount(){
+
+        allPrice=(TextView)findViewById(R.id.twTotalCost);
+        allPrice.setText("Total Cost: $" + summaryPrice);
+    }
 
     private class requestSQL extends AsyncTask<String, String, JSONObject> {
         private ProgressDialog pDialog;
@@ -181,6 +185,7 @@ public class CartActivity extends Activity {
             } catch (JSONException e) {
                 e.printStackTrace();
             }
+            //executeCount();
         }
     }
 
@@ -242,6 +247,7 @@ public class CartActivity extends Activity {
             } catch (JSONException e) {
                 e.printStackTrace();
             }
+            executeCount();
         }
     }
 }
