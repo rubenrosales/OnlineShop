@@ -44,7 +44,7 @@ public class BrowseActivity extends Activity {
     TextView price;
     ArrayList<HashMap<String, String> > songList = new ArrayList<>();
     //URL to get JSON Array
-    private static String url = "http://csufshop.ozolin.ru/selectTop.php";
+    private static String url = "http://csufshop.ozolin.ru/selectAll.php";
     //JSON Node Names
     private static final String TAG_ROWS = "rows";
     private static final String TAG_ID = "idsong";
