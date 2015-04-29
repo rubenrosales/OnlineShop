@@ -5,6 +5,8 @@ import android.app.AlertDialog;
 import android.app.ProgressDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.media.AudioManager;
+import android.media.MediaPlayer;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.view.View;
@@ -41,12 +43,14 @@ public class SearchActivity extends Activity {
     String[] artwork;
     String[] songName;
     String[] priceArray;
+    String[] urlArray;
     String fullURL;
     LazyAdapter lAdapter;
     String searchText;
     JSONObject jsonURL;
     ArrayList<HashMap<String, String>> songList = new ArrayList<>();
     SessionManager session;
+    MediaPlayer mp = new MediaPlayer();
     //JSON Node Names
     private static final String TAG_ROWS = "rows";
     private static final String TAG_ID = "idsong";
@@ -54,6 +58,7 @@ public class SearchActivity extends Activity {
     private static final String TAG_AUTHOR = "author";
     private static final String TAG_PRICE = "price";
     private static final String TAG_ARTWORK = "artwork";
+    private static final String TAG_URL = "url";
     JSONArray sAndroid = null;
 
     Button btnSearch;
@@ -88,7 +93,7 @@ public class SearchActivity extends Activity {
                 final String searchField = searchView.getText().toString();
                 final RadioButton rb = (RadioButton) findViewById(R.id.rbArtist);
                 searchText = searchField;
-
+                if(mp.isPlaying()){ mp.stop();  }
                if(rb.isChecked())
                 {
                     isArtist = "artist";
@@ -105,6 +110,7 @@ public class SearchActivity extends Activity {
         btnBackHome.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                if(mp.isPlaying()){ mp.stop();  }
                 Intent intent = new Intent(getApplicationContext(), HomeActivity.class);
                 startActivity(intent);
                 finish();
@@ -160,21 +166,15 @@ public class SearchActivity extends Activity {
         protected void onPostExecute(JSONObject json) {
             pDialog.dismiss();
             try {
-
-
-
-
                 // Getting JSON Array from URL
                 sAndroid = json.getJSONArray(TAG_ROWS);
                 Integer size= sAndroid.length();
-
-
-
 
                 artist = new String[size];
                 songName = new String[size];
                 artwork = new String[size];
                 priceArray = new String[size];
+                urlArray = new String[size];
 
                 for(int i = 0; i < sAndroid.length(); i++){
                     JSONObject c = sAndroid.getJSONObject(i);
@@ -183,10 +183,12 @@ public class SearchActivity extends Activity {
                     String author = c.getString(TAG_AUTHOR);
                     String price = "$" + c.getString(TAG_PRICE);
                     String art = c.getString(TAG_ARTWORK);
+                    String urlParsed = c.getString(TAG_URL);
                     artist[i] = author;
                     songName[i] = name;
                     artwork[i] = art;
                     priceArray[i] = price;
+                    urlArray[i] = urlParsed;
                     // Adding value HashMap key => value
                     HashMap<String, String> map = new HashMap<>();
                     map.put(TAG_ID, id);
@@ -198,11 +200,41 @@ public class SearchActivity extends Activity {
                     list=(ListView)findViewById(R.id.homeListView);
                     lAdapter = new LazyAdapter(SearchActivity.this, artwork,artist,songName,priceArray);
                     list.setAdapter(lAdapter);
+                    list.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+                        @Override
+                        public void onItemClick(AdapterView<?> parent, View view,
+                                                int position, long id) {
+                            if(mp.isPlaying()){
+                                mp.stop();
+                            }else {
+
+                                try {
+                                    mp = new MediaPlayer();
+                                    mp.setAudioStreamType(AudioManager.STREAM_MUSIC);
+                                    mp.setDataSource(urlArray[position]);
+                                    //int mp3Resource = getResources().getIdentifier(mySounds[position],"raw",MediaPlayer.create(getApplicationContext(),R.raw.sound1);
+                                    mp.prepare();
+                                    mp.start();
+                                }
+                                catch(Exception e){
+
+                                }
+                            }
+
+                            //this stops the song when it finishes i cant get it to work
+                            mp.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
+                                public void onCompletion(MediaPlayer mp) {
+                                    mp.reset(); // finish current activity
+                                }
+                            });
+
+                        }
+                    });
                     list.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
 
                         public boolean onItemLongClick(AdapterView<?> parent, View view,
                                                        int position, long id) {
-                            Toast.makeText(SearchActivity.this, "You added " + songList.get(position).get("name") + "with id "
+                            Toast.makeText(SearchActivity.this, "You added " + songList.get(position).get("name") + " with id "
                                     + songList.get(position).get("idsong") + " to cart", Toast.LENGTH_SHORT).show();
 
                             // Need user id and song id to store in Cart

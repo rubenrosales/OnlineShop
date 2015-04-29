@@ -22,7 +22,7 @@ import android.os.Handler;
 import android.view.View;
 import android.widget.SeekBar;
 import android.widget.TextView;
-
+import android.media.AudioManager;
 import com.example.lemon.onlineshop.Library.SessionManager;
 
 import org.json.JSONArray;
@@ -40,13 +40,14 @@ import mysql.access.library.JSONParser;
  * Home page activity for user
  */
 public class HomeActivity extends Activity {
-    int mySongs [] = new int[] {R.raw.song1,R.raw.song2,R.raw.song3,R.raw.song4,R.raw.song5,R.raw.song6,R.raw.song7,R.raw.song8,R.raw.song9,R.raw.song10};
+
     SessionManager session;
     MediaPlayer mp = new MediaPlayer();
     String[] artist;
     String[] artwork;
     String[] songName;
     String [] priceArray;
+    String[] urlArray;
     LazyAdapter adapter;
     ListView list;
     TextView name;
@@ -62,12 +63,14 @@ public class HomeActivity extends Activity {
     private static final String TAG_AUTHOR = "author";
     private static final String TAG_PRICE = "price";
     private static final String TAG_ARTWORK = "artwork";
+    private static final String TAG_URL = "url";
     JSONArray android = null;
 
     Button btnCart;
     Button btnCheckout;
     Button btnLogout;
     Button btnSearch;
+    Button btnBrowse;
 
     @Override
     public void onCreate (Bundle savedInstanceState){
@@ -86,6 +89,7 @@ public class HomeActivity extends Activity {
         btnCheckout = (Button) findViewById(R.id.btnCheckout);
         btnLogout = (Button) findViewById(R.id.btnLogout);
         btnSearch = (Button) findViewById(R.id.btnSearch);
+        btnBrowse = (Button) findViewById(R.id.browseButton);
         // Find textview
         TextView lblWelcome = (TextView) findViewById(R.id.tvWelcome);
         // Check if user logged in
@@ -141,6 +145,15 @@ public class HomeActivity extends Activity {
                 finish();
             }
         });
+        btnBrowse.setOnClickListener(new View.OnClickListener(){
+            @Override
+            public  void onClick(View v) {
+                if(mp.isPlaying()){ mp.stop();  }
+                Intent intent = new Intent(getApplicationContext(), BrowseActivity.class);
+                startActivity(intent);
+                finish();
+            }
+        });
     }
 
     private class requestSQL extends AsyncTask<String, String, JSONObject> {
@@ -171,6 +184,7 @@ public class HomeActivity extends Activity {
                 songName = new String[size];
                 artwork = new String[size];
                 priceArray = new String[size];
+                urlArray = new String[size];
                 // Getting JSON Array from URL
 
                 for(int i = 0; i < android.length(); i++){
@@ -181,10 +195,13 @@ public class HomeActivity extends Activity {
                     String author = c.getString(TAG_AUTHOR);
                     String price = "$" + c.getString(TAG_PRICE);
                     String art = c.getString(TAG_ARTWORK);
+                    String urlParse = c.getString(TAG_URL);
+
                     artist[i] = author;
                     songName[i] = name;
                     artwork[i] = art;
                     priceArray[i] = price;
+                    urlArray[i] = urlParse;
                     // Adding value HashMap key => value
                     HashMap<String, String> map = new HashMap<>();
                     map.put(TAG_ID, id);
@@ -230,26 +247,28 @@ public class HomeActivity extends Activity {
                             mp.stop();
                         }else {
                            // mp.setAudioStreamType(AudioManager.STREAM_MUSIC);
-                            mp = MediaPlayer.create(HomeActivity.this, mySongs[position]);
+                           // mp = MediaPlayer.create(HomeActivity.this, mySongs[position]);
+                            try {
+                                mp = new MediaPlayer();
+                                mp.setAudioStreamType(AudioManager.STREAM_MUSIC);
+                                mp.setDataSource(urlArray[position]);
+                                //int mp3Resource = getResources().getIdentifier(mySounds[position],"raw",MediaPlayer.create(getApplicationContext(),R.raw.sound1);
+                                mp.prepare();
+                                mp.start();
+                            }
+                            catch(Exception e){
 
-                            //int mp3Resource = getResources().getIdentifier(mySounds[position],"raw",MediaPlayer.create(getApplicationContext(),R.raw.sound1);
-                            // mp.prepare();
-                            mp.start();
-                            new Handler().postDelayed(new Runnable() {
-                                @Override
-                                public void run() {
-                                    mp.reset();
-                                }
-                            }, 30000);
+                            }
+
                            // mp.setOnCompletionListener(onCompletionListener);
                         }
 
                         //this stops the song when it finishes i cant get it to work
-                           /* mp.setOnCompletionListener(new OnCompletionListener() {
+                            mp.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
                                 public void onCompletion(MediaPlayer mp) {
-                                    mp.release();
+                                    mp.reset(); // finish current activity
                                 }
-                            });*/
+                            });
                       //  }
                     }
                 });
