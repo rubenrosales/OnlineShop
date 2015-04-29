@@ -91,7 +91,6 @@ public class MainActivity extends ActionBarActivity {
             // For testing puspose username, password is checked with sample data
             // email = test@test.com
             // password = test
-            // if (password == getPasswordByEmail( String email))
             if(password.equals(toCheck)){
                 // TODO fix problem when we need two login attempts
                 // after delete alertDialog
@@ -104,12 +103,12 @@ public class MainActivity extends ActionBarActivity {
 
             }else{
                 alertDialog.setTitle("Login Failed");
-                alertDialog.setMessage("Email and Password didn't match, database returned " + toCheck);
+                alertDialog.setMessage("Email and Password didn't match");
                 alertDialog.show();
             }
         }else{
             alertDialog.setTitle("Login Failed");
-            alertDialog.setMessage("Incorrect Email or Password"+email.trim().length());
+            alertDialog.setMessage("Incorrect Email or Password");
             alertDialog.show();
         }
     }
@@ -224,6 +223,8 @@ public class MainActivity extends ActionBarActivity {
         protected void onPostExecute(JSONObject json) {
             pDialog.dismiss();
             try {
+                //TODO if email doesn't exist json returns []
+                //App cant parse it and throws error
                 // Getting JSON Array from URL
                 android = json.getJSONArray(TAG_ROWS);
                 JSONObject c = android.getJSONObject(0);
