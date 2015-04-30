@@ -102,7 +102,9 @@ public class CartActivity extends Activity {
     }
 
     public void executeCount(){
-
+        if(summaryPrice == null){
+            summaryPrice = "0";
+        }
         allPrice=(TextView)findViewById(R.id.twTotalCost);
         allPrice.setText("Total Cost: $" + summaryPrice);
     }

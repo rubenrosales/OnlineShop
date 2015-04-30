@@ -76,39 +76,36 @@ public class MainActivity extends ActionBarActivity {
 
                 LogInEmail = emailView.getText().toString();
                 LogInPassword = passwordView.getText().toString();
-                new getUserId().execute(LogInEmail);
-                new LogIn().execute(LogInEmail, LogInPassword);
+                if (LogInEmail.equals("") || LogInPassword.equals("")){
+                    alertDialog.setTitle("Login Failed");
+                    alertDialog.setMessage("Please enter email and password ");
+                    alertDialog.show();
+            }else {
+                    new getUserId().execute(LogInEmail);
+                    new LogIn().execute(LogInEmail, LogInPassword);
+                }
             }
         });
     }
+
     //Description:
     public void executeLogIn(){
         final AlertDialog alertDialog = new AlertDialog.Builder(this).create();
         String email = LogInEmail;
         String password = LogInPassword;
-
-        if(email.trim().length() > 0 && password.trim().length() > 0){
-            // For testing puspose username, password is checked with sample data
-            // email = test@test.com
-            // password = test
-            if(password.equals(toCheck)){
-                // TODO fix problem when we need two login attempts
-                // after delete alertDialog
-                // Creating user login session
-                session.createLoginSession(email, password, userId);
-                // Staring HomeActivity
-                Intent intent = new Intent(getApplicationContext(), HomeActivity.class);
-                startActivity(intent);
-                finish();
-
-            }else{
-                alertDialog.setTitle("Login Failed");
-                alertDialog.setMessage("Email and Password didn't match");
-                alertDialog.show();
-            }
+        // For testing puspose username, password is checked with sample data
+        // email = test@test.com
+        // password = test
+        if(password.equals(toCheck)){
+            // Creating user login session
+            session.createLoginSession(email, password, userId);
+            // Staring HomeActivity
+            Intent intent = new Intent(getApplicationContext(), HomeActivity.class);
+            startActivity(intent);
+            finish();
         }else{
             alertDialog.setTitle("Login Failed");
-            alertDialog.setMessage("Incorrect Email or Password");
+            alertDialog.setMessage("Email and Password didn't match");
             alertDialog.show();
         }
     }
@@ -190,7 +187,6 @@ public class MainActivity extends ActionBarActivity {
                     // Storing  JSON item in a Variable
                     //String password = c.getString(TAG_PASSWORD);
                     toCheck = c.getString(TAG_PASSWORD);
-
                 executeLogIn();
             } catch (JSONException e) {
                 e.printStackTrace();
