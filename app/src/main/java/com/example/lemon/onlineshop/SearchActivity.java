@@ -93,6 +93,9 @@ public class SearchActivity extends Activity {
                 final String searchField = searchView.getText().toString();
                 final RadioButton rb = (RadioButton) findViewById(R.id.rbArtist);
                 searchText = searchField;
+                if (searchText.contains(" ")) {
+                    searchText = searchText.replace(" ","@");
+                }
                 if(mp.isPlaying()){ mp.stop();  }
                if(rb.isChecked())
                 {
