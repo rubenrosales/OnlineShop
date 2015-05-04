@@ -8,20 +8,11 @@ import android.os.Bundle;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.Button;
-import android.widget.ListAdapter;
 import android.widget.ListView;
-import android.widget.SimpleAdapter;
 import android.widget.TextView;
 import android.widget.Toast;
-import java.util.concurrent.TimeUnit;
 import android.widget.AdapterView.OnItemLongClickListener;
-import android.app.Activity;
 import android.media.MediaPlayer;
-import android.os.Bundle;
-import android.os.Handler;
-import android.view.View;
-import android.widget.SeekBar;
-import android.widget.TextView;
 import android.media.AudioManager;
 import com.example.lemon.onlineshop.Library.SessionManager;
 
@@ -32,7 +23,7 @@ import org.json.JSONObject;
 import java.util.ArrayList;
 import java.util.HashMap;
 
-import mysql.access.library.INSERTmySQL;
+import mysql.access.library.AccessMYSQL;
 import mysql.access.library.JSONParser;
 
 /**
@@ -300,7 +291,7 @@ public class HomeActivity extends Activity {
 
         @Override
         protected String doInBackground(String... params) {
-            INSERTmySQL insertToCart = new INSERTmySQL();
+            AccessMYSQL insertToCart = new AccessMYSQL();
             String a = params[0];
             String b = params[1];
             insertToCart.insertToCart(a, b);

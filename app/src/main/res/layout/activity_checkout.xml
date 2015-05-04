@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="match_parent" android:layout_height="match_parent">
+    android:layout_width="match_parent" android:layout_height="match_parent"
+    android:background="@drawable/evil">
 
     <Button
         android:layout_width="wrap_content"
@@ -11,16 +12,130 @@
         android:layout_alignParentLeft="true"
         android:layout_alignParentStart="true" />
 
-    <TextView
+    <!-- Text bot to input users name !-->
+    <EditText
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:textAppearance="?android:attr/textAppearanceMedium"
-        android:text="Please enter payment information and verify total price"
-        android:id="@+id/textView4"
-        android:layout_marginTop="35dp"
+        android:inputType="textPersonName"
+        android:hint="Name on card"
+        android:ems="10"
+        android:id="@+id/editText"
         android:layout_alignParentTop="true"
-        android:layout_centerHorizontal="true" />
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true"
+        android:layout_marginTop="60dp"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentEnd="true"
+        android:background="#FFFFFF"
+        />
 
+    <!-- Textbox to enter users address!-->
+    <EditText
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:inputType="textPostalAddress"
+        android:ems="10"
+        android:id="@+id/billingAddress"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true"
+        android:layout_marginTop="38dp"
+        android:layout_below="@+id/editText"
+        android:hint="Billing Address"
+        android:background="#FFFFFF"
+        />
+
+    <!--number box to enter users credit card number !-->
+    <EditText
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:inputType="numberPassword"
+        android:ems="10"
+        android:id="@+id/creditCardNumber"
+        android:hint="Credit Card Number"
+        android:layout_below="@+id/billingAddress"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true"
+        android:layout_marginTop="108dp"
+        android:background="#FFFFFF"
+        />
+
+    <!-- number box to enter users exp date!-->
+    <EditText
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:inputType="date"
+        android:ems="10"
+        android:id="@+id/expirationDate"
+        android:layout_marginTop="56dp"
+        android:hint="Exp. Date"
+        android:layout_below="@+id/creditCardNumber"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true"
+        android:background="#FFFFFF"
+        />
+
+    <!-- Accept Button!-->
+
+    <!-- number box to enter security code!-->
+    <EditText
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:inputType="numberPassword"
+        android:ems="10"
+        android:id="@+id/securityCode"
+        android:hint="Security Code"
+        android:layout_alignBaseline="@+id/expirationDate"
+        android:layout_alignBottom="@+id/expirationDate"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentEnd="true"
+        android:layout_toRightOf="@+id/expirationDate"
+        android:layout_toEndOf="@+id/expirationDate"
+        android:background="#FFFFFF"
+        />
+
+    <!-- radio buttons for credit card type!-->
+    <RadioGroup
+        android:id="@+id/creditCardRadioGroup"
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent"
+        android:orientation="horizontal"
+        android:layout_below="@+id/billingAddress"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true"
+        android:layout_marginTop="42dp"
+        android:layout_alignBottom="@+id/creditCardNumber"
+        android:weightSum="1">
+
+        <RadioButton
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Visa"
+            android:id="@+id/visaRadioButton"
+            android:checked="true"
+            android:layout_weight="0.36"
+            android:background="#FFFFFF"
+            />
+
+        <RadioButton
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="MasterCard"
+            android:id="@+id/masterCardRadioButton"
+            android:checked="false"
+            android:layout_weight="0.38"
+            android:background="#FFFFFF"
+            />
+
+        <RadioButton
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="American Express"
+            android:id="@+id/americanExpressRadioButton"
+            android:checked="false"
+            android:background="#FFFFFF"
+            />
+
+    </RadioGroup>
     <Button
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"

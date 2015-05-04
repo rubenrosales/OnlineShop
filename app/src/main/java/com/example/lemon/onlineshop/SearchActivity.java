@@ -27,7 +27,7 @@ import org.json.JSONObject;
 import java.util.ArrayList;
 import java.util.HashMap;
 
-import mysql.access.library.INSERTmySQL;
+import mysql.access.library.AccessMYSQL;
 import mysql.access.library.JSONParser;
 
 /**
@@ -135,7 +135,7 @@ public class SearchActivity extends Activity {
 
         @Override
         protected String doInBackground(String... params) {
-            INSERTmySQL insertToCart = new INSERTmySQL();
+            AccessMYSQL insertToCart = new AccessMYSQL();
             String a = params[0];
             String b = params[1];
             insertToCart.insertToCart(a, b);

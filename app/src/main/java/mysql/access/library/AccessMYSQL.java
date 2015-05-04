@@ -18,9 +18,9 @@ import java.io.UnsupportedEncodingException;
  * */
 
 //TODO refactor, both method doing same with different strings
- public class INSERTmySQL {
+ public class AccessMYSQL {
 
-    public INSERTmySQL(){
+    public AccessMYSQL(){
 
     }
 

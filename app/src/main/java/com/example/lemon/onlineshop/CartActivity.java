@@ -8,9 +8,7 @@ import android.os.Bundle;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.Button;
-import android.widget.ListAdapter;
 import android.widget.ListView;
-import android.widget.SimpleAdapter;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -21,7 +19,7 @@ import org.json.JSONObject;
 import java.util.ArrayList;
 import java.util.HashMap;
 
-import mysql.access.library.INSERTmySQL;
+import mysql.access.library.AccessMYSQL;
 import mysql.access.library.JSONParser;
 
 /**
@@ -205,7 +203,7 @@ public class CartActivity extends Activity {
 
         @Override
         protected String doInBackground(String... params) {
-            INSERTmySQL deleteFromCart = new INSERTmySQL();
+            AccessMYSQL deleteFromCart = new AccessMYSQL();
             String a = params[0];
             String b = params[1];
             deleteFromCart.deleteFromCart(a, b);

@@ -10,7 +10,7 @@ import android.widget.Button;
 
 import com.example.lemon.onlineshop.Library.SessionManager;
 import java.util.HashMap;
-import mysql.access.library.INSERTmySQL;
+import mysql.access.library.AccessMYSQL;
 
 
 /**
@@ -72,7 +72,7 @@ public class CheckoutActivity extends Activity {
 
         @Override
         protected String doInBackground(String... params) {
-            INSERTmySQL insertToCart = new INSERTmySQL();
+            AccessMYSQL insertToCart = new AccessMYSQL();
             String email = params[0];
             insertToCart.sendEmail(email);
             pDialog.dismiss();

@@ -12,14 +12,14 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.Toast;
+
 import com.example.lemon.onlineshop.Library.SessionManager;
 
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import mysql.access.library.INSERTmySQL;
+import mysql.access.library.AccessMYSQL;
 import mysql.access.library.JSONParser;
 
 
@@ -146,7 +146,7 @@ public class MainActivity extends ActionBarActivity {
 
         @Override
         protected String doInBackground(String... params) {
-            INSERTmySQL insertUser = new INSERTmySQL();
+            AccessMYSQL insertUser = new AccessMYSQL();
             String a = params[0];
             String b = params[1];
             insertUser.insertMailAndPass(a, b);
