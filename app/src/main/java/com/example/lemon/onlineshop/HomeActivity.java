@@ -55,7 +55,7 @@ public class HomeActivity extends Activity {
     TextView price;
     ArrayList <HashMap<String, String> > songList = new ArrayList<>();
     //URL to get JSON Array
-    private static String url = "http://csufshop.ozolin.ru/selectTop.php";
+    private static String url = "http://csufshop.ozolin.ru/selectTop6ByPopularity.php";
     //JSON Node Names
     private static final String TAG_ROWS = "rows";
     private static final String TAG_ID = "idsong";
@@ -224,8 +224,7 @@ public class HomeActivity extends Activity {
 
                     public boolean onItemLongClick(AdapterView<?> parent, View view,
                                                    int position, long id) {
-                        Toast.makeText(HomeActivity.this, "You added " + songList.get(position).get("name") + "with id "
-                                + songList.get(position).get("idsong") + " to cart", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(HomeActivity.this, "You added " + songList.get(position).get("name") + " to cart", Toast.LENGTH_SHORT).show();
 
                         // Need user id and song id to store in Cart
                         HashMap<String, String> user = session.getUserDetails();
@@ -293,7 +292,7 @@ public class HomeActivity extends Activity {
         protected void onPreExecute() {
             super.onPreExecute();
             pDialog = new ProgressDialog(HomeActivity.this);
-            pDialog.setMessage("Posting Data ...");
+            pDialog.setMessage("Adding song ...");
             pDialog.setIndeterminate(false);
             pDialog.setCancelable(true);
             pDialog.show();

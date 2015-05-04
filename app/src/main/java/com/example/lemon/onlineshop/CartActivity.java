@@ -118,7 +118,7 @@ public class CartActivity extends Activity {
             author = (TextView)findViewById(R.id.author);
             price = (TextView)findViewById(R.id.price);
             pDialog = new ProgressDialog(CartActivity.this);
-            pDialog.setMessage("Getting Data ...");
+            pDialog.setMessage("Deleting ...");
             pDialog.setIndeterminate(false);
             pDialog.setCancelable(true);
             pDialog.show();
@@ -171,8 +171,7 @@ public class CartActivity extends Activity {
                         @Override
                         public void onItemClick(AdapterView<?> parent, View view,
                                                 int position, long id) {
-                            Toast.makeText(CartActivity.this, "You added " + songList.get(+position).get("name") + "with id "
-                                    + songList.get(+position).get("idsong") + " to cart", Toast.LENGTH_SHORT).show();
+                            Toast.makeText(CartActivity.this, "You deleted " + songList.get(+position).get("name") + " from cart", Toast.LENGTH_SHORT).show();
                             // Need user id and song id to store in Cart
                             //HashMap<String, String> user = session.getUserDetails();
                             //String user_id = user.get(SessionManager.KEY_ID);
@@ -222,7 +221,6 @@ public class CartActivity extends Activity {
         protected  void onPreExecute() {
             super.onPreExecute();
             pDialog = new ProgressDialog(CartActivity.this);
-            //pDialog.setMessage("Login in ...");
             pDialog.setIndeterminate(false);
             pDialog.setCancelable(true);
             pDialog.show();
