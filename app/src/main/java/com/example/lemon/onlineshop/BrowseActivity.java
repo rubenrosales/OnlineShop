@@ -24,7 +24,7 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import mysql.access.library.INSERTmySQL;
+import mysql.access.library.AccessMYSQL;
 import mysql.access.library.JSONParser;
 
 
@@ -236,7 +236,7 @@ private static final String TAG_URL = "url";
 
         @Override
         protected String doInBackground(String... params) {
-            INSERTmySQL insertToCart = new INSERTmySQL();
+            AccessMYSQL insertToCart = new AccessMYSQL();
             String a = params[0];
             String b = params[1];
             insertToCart.insertToCart(a, b);

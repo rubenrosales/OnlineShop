@@ -8,9 +8,7 @@ import android.os.Bundle;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.Button;
-import android.widget.ListAdapter;
 import android.widget.ListView;
-import android.widget.SimpleAdapter;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -21,7 +19,7 @@ import org.json.JSONObject;
 import java.util.ArrayList;
 import java.util.HashMap;
 
-import mysql.access.library.INSERTmySQL;
+import mysql.access.library.AccessMYSQL;
 import mysql.access.library.JSONParser;
 
 /**
@@ -118,7 +116,7 @@ public class CartActivity extends Activity {
             author = (TextView)findViewById(R.id.author);
             price = (TextView)findViewById(R.id.price);
             pDialog = new ProgressDialog(CartActivity.this);
-            pDialog.setMessage("Getting Data ...");
+            pDialog.setMessage("Deleting ...");
             pDialog.setIndeterminate(false);
             pDialog.setCancelable(true);
             pDialog.show();
@@ -171,8 +169,7 @@ public class CartActivity extends Activity {
                         @Override
                         public void onItemClick(AdapterView<?> parent, View view,
                                                 int position, long id) {
-                            Toast.makeText(CartActivity.this, "You added " + songList.get(+position).get("name") + "with id "
-                                    + songList.get(+position).get("idsong") + " to cart", Toast.LENGTH_SHORT).show();
+                            Toast.makeText(CartActivity.this, "You deleted " + songList.get(+position).get("name") + " from cart", Toast.LENGTH_SHORT).show();
                             // Need user id and song id to store in Cart
                             //HashMap<String, String> user = session.getUserDetails();
                             //String user_id = user.get(SessionManager.KEY_ID);
@@ -206,7 +203,7 @@ public class CartActivity extends Activity {
 
         @Override
         protected String doInBackground(String... params) {
-            INSERTmySQL deleteFromCart = new INSERTmySQL();
+            AccessMYSQL deleteFromCart = new AccessMYSQL();
             String a = params[0];
             String b = params[1];
             deleteFromCart.deleteFromCart(a, b);
@@ -222,7 +219,6 @@ public class CartActivity extends Activity {
         protected  void onPreExecute() {
             super.onPreExecute();
             pDialog = new ProgressDialog(CartActivity.this);
-            //pDialog.setMessage("Login in ...");
             pDialog.setIndeterminate(false);
             pDialog.setCancelable(true);
             pDialog.show();

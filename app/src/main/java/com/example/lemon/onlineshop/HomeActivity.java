@@ -8,20 +8,11 @@ import android.os.Bundle;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.Button;
-import android.widget.ListAdapter;
 import android.widget.ListView;
-import android.widget.SimpleAdapter;
 import android.widget.TextView;
 import android.widget.Toast;
-import java.util.concurrent.TimeUnit;
 import android.widget.AdapterView.OnItemLongClickListener;
-import android.app.Activity;
 import android.media.MediaPlayer;
-import android.os.Bundle;
-import android.os.Handler;
-import android.view.View;
-import android.widget.SeekBar;
-import android.widget.TextView;
 import android.media.AudioManager;
 import com.example.lemon.onlineshop.Library.SessionManager;
 
@@ -32,7 +23,7 @@ import org.json.JSONObject;
 import java.util.ArrayList;
 import java.util.HashMap;
 
-import mysql.access.library.INSERTmySQL;
+import mysql.access.library.AccessMYSQL;
 import mysql.access.library.JSONParser;
 
 /**
@@ -55,7 +46,7 @@ public class HomeActivity extends Activity {
     TextView price;
     ArrayList <HashMap<String, String> > songList = new ArrayList<>();
     //URL to get JSON Array
-    private static String url = "http://csufshop.ozolin.ru/selectTop.php";
+    private static String url = "http://csufshop.ozolin.ru/selectTop6ByPopularity.php";
     //JSON Node Names
     private static final String TAG_ROWS = "rows";
     private static final String TAG_ID = "idsong";
@@ -224,8 +215,7 @@ public class HomeActivity extends Activity {
 
                     public boolean onItemLongClick(AdapterView<?> parent, View view,
                                                    int position, long id) {
-                        Toast.makeText(HomeActivity.this, "You added " + songList.get(position).get("name") + "with id "
-                                + songList.get(position).get("idsong") + " to cart", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(HomeActivity.this, "You added " + songList.get(position).get("name") + " to cart", Toast.LENGTH_SHORT).show();
 
                         // Need user id and song id to store in Cart
                         HashMap<String, String> user = session.getUserDetails();
@@ -293,7 +283,7 @@ public class HomeActivity extends Activity {
         protected void onPreExecute() {
             super.onPreExecute();
             pDialog = new ProgressDialog(HomeActivity.this);
-            pDialog.setMessage("Posting Data ...");
+            pDialog.setMessage("Adding song ...");
             pDialog.setIndeterminate(false);
             pDialog.setCancelable(true);
             pDialog.show();
@@ -301,7 +291,7 @@ public class HomeActivity extends Activity {
 
         @Override
         protected String doInBackground(String... params) {
-            INSERTmySQL insertToCart = new INSERTmySQL();
+            AccessMYSQL insertToCart = new AccessMYSQL();
             String a = params[0];
             String b = params[1];
             insertToCart.insertToCart(a, b);
